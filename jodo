@@ -1,0 +1,45 @@
+#!/bin/bash
+
+#USAGE: jodo wget https://google.com.cu
+
+#@migulelespauljr, @javier.cabrales, @engel
+
+if [ -z $1 ]; then
+    echo "USAGE: jodo -u [USERNAME] [STATMENT] or jodo [STATMENT]"
+    exit
+    elif [ $1 == "-u" ]; then
+    read -p "user: " -s PASS
+    read -p "password: " -s PASS
+else
+    USER="ariel.penalver"
+    read -p "USUARIO ${USER} ESCRIBE EL PASSWORD: " -s PASS
+fi
+
+if [ $1 == "-pf" ]; then
+    echo "PFSENSE"
+    export http_proxy=http://${USER}:${PASS}@10.0.100.191:3128/
+    export https_proxy=http://${USER}:${PASS}@10.0.100.191:3128/
+    export ftp_proxy=http://${USER}:${PASS}@10.0.100.191:3128/
+    export HTTP_PROXY=http://${USER}:${PASS}@10.0.100.191:3128/
+    export HTTPS_PROXY=http://${USER}:${PASS}@10.0.100.191:3128/
+    export FTP_PROXY=http://${USER}:${PASS}@10.0.100.191:3128/
+    $2 $3 $4 $5 $6 $7 $8
+elif [ $1 == "-t"  ]; then 
+    echo "TOR"
+    export http_proxy=http://127.0.0.1:9050/
+    export https_proxy=http://127.0.0.1:9050/
+    export ftp_proxy=http://127.0.0.1:9050/
+    export HTTP_PROXY=http://127.0.0.1:9050/
+    export HTTPS_PROXY=http://127.0.0.1:9050/
+    export FTP_PROXY=http://127.0.0.1:9050/
+    $2 $3 $4 $5 $6 $7 $8
+
+else
+    export http_proxy=http://${USER}:${PASS}@10.0.1.253:3128/
+    export https_proxy=http://${USER}:${PASS}@10.0.1.253:3128/
+    export ftp_proxy=http://${USER}:${PASS}@10.0.1.253:3128/
+    export HTTP_PROXY=http://${USER}:${PASS}@10.0.1.253:3128/
+    export HTTPS_PROXY=http://${USER}:${PASS}@10.0.1.253:3128/
+    export FTP_PROXY=http://${USER}:${PASS}@10.0.1.253:3128/
+    $@
+fi
