@@ -8,9 +8,9 @@ class ForecastSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class OutputSerializer(serializers.ModelSerializer):
+class RunOutputSerializer(serializers.ModelSerializer):
     forecast = ForecastSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Output
+        model = RunOutput
         fields = '__all__'

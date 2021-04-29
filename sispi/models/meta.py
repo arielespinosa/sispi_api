@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
+from django.contrib.gis.geos import GEOSGeometry
 from django.http import JsonResponse
-from sispi.models.managers import ProvincesManager
+from sispi.models.managers import ProvincesManager, MunicipalitiesManager
 
 MODEL_CHOICES = [
     ('SisPI', 'Sistema de Pronóstico Inmediato'),
@@ -18,7 +19,6 @@ class UM(models.Model):
 
 class PointLocation(models.Model):
     location = models.PointField(blank=True)
-    ref = models.IntegerField(default=1, blank=True, null=True)
 
     def __str__(self):
         return '{}'.format(self.location)
@@ -37,10 +37,6 @@ class MetVariable(models.Model):
 class Domain(models.Model):
     slug_name = models.SlugField(max_length=5)
     resolution = models.IntegerField()
-    top_lat = models.FloatField(blank=True, null=True)
-    bottom_lat = models.FloatField(blank=True, null=True)
-    left_long = models.FloatField(blank=True, null=True)
-    right_long = models.FloatField(blank=True, null=True)
     grid = models.PolygonField(blank=True, null=True)  # The ractangle area. Check if the object is the apropiate
     description = models.CharField(max_length=500, blank=True, null=True)
     model = models.CharField(max_length=10, choices=MODEL_CHOICES, blank=True, null=True)
@@ -82,10 +78,29 @@ class Municipality(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
     km2 = models.FloatField(blank=True, null=True)
     geom = models.MultiPolygonField(srid=4608, blank=True, null=True)
+    objects = MunicipalitiesManager()
 
     def __str__(self):
         return self.name
 
+    def domain_points(self, domain_pk):
+        domain = Domain.objects.get(pk=domain_pk)
+        geom = GEOSGeometry(self.geom, srid=4608)
+        return [point for point in domain.points.all() if geom.contains(GEOSGeometry(point.location))]
+
     def forecast(self):
         data = {'max': 3, 'min': 1, 'mean': 2.5}
         return JsonResponse(data)
+
+
+# Delete this on production
+# This model its only for update sispi_municipality table
+class Municipios(models.Model):
+    geom = models.MultiPolygonField(srid=4608, blank=True, null=True)
+    municipio = models.CharField(max_length=25, blank=True, null=True)
+    provincia = models.CharField(max_length=25, blank=True, null=True)
+    area = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'municipios'

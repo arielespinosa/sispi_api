@@ -2,7 +2,7 @@ import numpy as np
 import os
 from pickle import dump, load
 from scipy.io import netcdf as nc
-
+from wrf import getvar
 
 class NetCDF:
     filename, data, dataset = None, dict(), None
@@ -53,6 +53,17 @@ class NetCDF:
         with open(filename, "wb") as f:
             dump(self.data, f, protocol=2)
 
+    def __extra_vars__(self, var):
+
+        if var == 'WIND_S':
+            u10 = self.dataset.variables['U10'][:]
+            v10 = self.dataset.variables['V10'][:]
+            return np.sqrt(u10**2 + v10**2)
+
+        elif var == 'SLP':
+            #wrfnc = Dataset("wrfout_d02_2010-06-13_21:00:00")
+            return getvar(self.dataset, "slp")
+
     def save(self, filename):
         if filename.find("/") == -1:
             with open(filename, "wb") as f:
@@ -92,7 +103,7 @@ class NetCDF:
             del var_key
         return data
 
-    def get_as_json(self, pvars, f="json", reshape=False, as_list=False):
+    def get_as_json(self, pvars, f="json", reshape=False, as_float_list=False):
         if f == "json":
             data = dict()
             for var in pvars:
@@ -104,8 +115,8 @@ class NetCDF:
                 if reshape:
                     value = value.reshape(-1, )
 
-                if as_list:
-                    value = np.array(value, dtype='float')
+                if as_float_list:
+                    value = [float(v) for v in value]
 
                 var_key = dict({var: value})
                 data.update(var_key)

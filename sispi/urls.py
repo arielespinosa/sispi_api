@@ -4,8 +4,6 @@ from django.urls import path, include
 from .views.outputs import *
 from .views.meta import *
 from .views.forecast_querys import ForecastViewSet
-from .views.init_netcdf2database import NetCDF2DataBase
-
 
 router = routers.SimpleRouter()
 router.register('outputs', OutputModelViewSet)
@@ -16,8 +14,11 @@ router.register('meta/municipalities', MunicipalitiesModelViewSet)
 
 urlpatterns = (
     path(r'', include(router.urls)),
-    path('init/netcdf_2_database/', NetCDF2DataBase.as_view(), name='netcdf_2_database'),
+    path('init/provinces/', init_provinces, name='init_provinces'),
     path('forecast/', ForecastViewSet.as_view(), name='forecast_province'),
     path('forecast/<str:province>/', ForecastViewSet.as_view(), name='forecast_province'),
+
+    path('utils/update_municipality/', update_municipality, name='update_municipality'),
+    path('utils/update_municipality/', update_municipality, name='update_municipality'),
 )
 

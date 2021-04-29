@@ -4,7 +4,7 @@
   "provincias": {
     "1": {
       "nombre": "Pinar del Río",
-      "codigo": "PR",
+      "codigo": "PRI",
       "municipios": [
         "Consolación del Sur",
         "Guane",
@@ -263,14 +263,5 @@
       "nombre": "Isla de la Juventud",
       "codigo": "ISJ"
     }
-  },
-
-  "secciones": {
-    "1": {"nombre": "Música"},
-    "2": {"nombre": "Teatro"},
-    "3": {"nombre": "Danza"},
-    "4": {"nombre": "Investigación"},
-    "5": {"nombre": "Artes plásticas"}
   }
-
 }
