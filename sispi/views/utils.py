@@ -7,6 +7,8 @@ import os
 import json
 from sispi_api.settings import BASE_DIR
 import Levenshtein
+from django.contrib.gis.geos import MultiPolygon
+import numpy as np
 
 
 def init_provinces(request, *args, **kwargs):
@@ -24,6 +26,37 @@ def init_provinces(request, *args, **kwargs):
                     for nombre in data[key][key2]['municipios']:
                         Municipality.objects.create(name=nombre, province=province)
                         
+    return JsonResponse({'msg': 'All data was saved successfully'}, status=status.HTTP_200_OK)
+
+
+def init_provinces_2(request, *args, **kwargs):
+    # Seek how update geom too
+
+    file = os.path.join(BASE_DIR, 'sispi/fixtures/provincias_y_municipios_3.json')
+    data = json.load(open(file))
+
+    for key in data.keys():
+        if key == 'provincias':
+            for key2 in data[key].keys():
+                province = Province.objects.get(short_name=data[key][key2]['code'])
+
+                if key2 != '16':
+                    for pk in data[key][key2]['municipalities'].keys():
+                        nombre = data[key][key2]['municipalities'][pk]['name']
+                        municipality = Municipality.objects.get(name=nombre, province=province)
+                        print(municipality.name)
+
+                        n_poligons = len(data[key][key2]['municipalities'][pk]['geometry']['coordinates'])
+                        poligons = []
+
+                        for i in range(n_poligons):
+                            points = np.array(data[key][key2]['municipalities'][pk]['geometry']['coordinates'][i][0])
+                            poligons.append(points[:, :2].tolist())
+
+                        geometry = {"type": "MultiPolygon", "coordinates": poligons}
+                        municipality.geom = GEOSGeometry(str(geometry))
+                        municipality.save()
+
     return JsonResponse({'msg': 'All data was saved successfully'}, status=status.HTTP_200_OK)
 
 
@@ -60,9 +93,5 @@ def check_domain_points_on_municipality(request, *args, **kwargs):
     d = Domain.objects.get(pk=1)
     points = Municipality.objects.get(pk=1, geom__contains=d.points)
     print(points)
-
-
-
-
 
 

@@ -29,4 +29,4 @@ def forecast_municipality(sender, instance, action, reverse, model, pk_set, **kw
     pass
 
 
-m2m_changed.connect(forecast_municipality, RunOutput.forecast.through)
+#m2m_changed.connect(forecast_municipality, RunOutput.forecast.through)

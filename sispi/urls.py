@@ -3,6 +3,7 @@ from rest_framework import routers
 from django.urls import path, include
 from .views.outputs import *
 from .views.meta import *
+from .views.utils import *
 from .views.forecast_querys import ForecastViewSet
 
 router = routers.SimpleRouter()
@@ -14,7 +15,7 @@ router.register('meta/municipalities', MunicipalitiesModelViewSet)
 
 urlpatterns = (
     path(r'', include(router.urls)),
-    path('init/provinces/', init_provinces, name='init_provinces'),
+    path('init/provinces/', init_provinces_2, name='init_provinces'),
     path('forecast/', ForecastViewSet.as_view(), name='forecast_province'),
     path('forecast/<str:province>/', ForecastViewSet.as_view(), name='forecast_province'),
 

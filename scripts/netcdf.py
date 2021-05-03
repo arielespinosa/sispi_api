@@ -61,7 +61,6 @@ class NetCDF:
             return np.sqrt(u10**2 + v10**2)
 
         elif var == 'SLP':
-            #wrfnc = Dataset("wrfout_d02_2010-06-13_21:00:00")
             return getvar(self.dataset, "slp")
 
     def save(self, filename):
@@ -107,9 +106,12 @@ class NetCDF:
         if f == "json":
             data = dict()
             for var in pvars:
-                value = np.array(self.dataset.variables[var][:])
+                try:
+                    value = np.array(self.dataset.variables[var][:])
+                except:
+                    value = self.__extra_vars__(var)
 
-                if value.shape != (1, 183, 411):
+                if value.shape == (1, 183, 411):
                     value = value[0]
 
                 if reshape:
