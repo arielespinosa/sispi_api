@@ -16,7 +16,7 @@ class UM(models.Model):
     def __str__(self):
         return self.slug_name
 
-
+"""
 class PointLocation(models.Model):
     location = models.PointField(blank=True)
 
@@ -104,3 +104,4 @@ class Municipios(models.Model):
     class Meta:
         managed = False
         db_table = 'municipios'
+"""
