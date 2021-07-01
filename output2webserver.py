@@ -4,6 +4,7 @@ import json
 from time import sleep
 import Levenshtein
 
+
 def post_output(f):
     nc = NetCDF(f)
     vars_data = nc.get_as_json(pvars=["T2", "Q2", "RAINC", "SLP", "WIND_S"], reshape=True, as_float_list=True)
@@ -49,8 +50,6 @@ def post_domain():
         "description": "SisPI 3 km domain",
         "model": "SisPI",
         "hour": 5,
-        "lat_lng": lat_lng
-
     }
 
     #r = requests.post('http://127.0.0.1:8000/sispi_api/v1.0/meta/domains/', json=data)
@@ -192,7 +191,43 @@ def asignar_geom():
         json.dump(data, f, ensure_ascii=False)
 
 
+def update_provinces_geom():
+    file = 'sispi/fixtures/provincias_y_municipios_3.json'
+    file2 = '/home/mint/Tesis/datos/provincias.geojson'
+
+    with open(file, 'r') as f:
+        data = json.load(f)
+    f.close()
+
+    with open(file2, 'r') as f:
+        data2 = json.load(f)
+    f.close()
+
+    i = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 40]
+
+    for prov in data2['features']:
+        c = int(prov['properties']['Cod_PROV']) - 20
+
+        if c != 20:
+            data['provincias'][str(c)].update(
+                {
+                    'geom': prov['geometry']
+                }
+            )
+        else:
+            data['provincias']['16'].update(
+                {
+                    'geom': prov['geometry']
+                }
+            )
+
+    with open('sispi/fixtures/provinces.json', 'w') as f:
+        json.dump(data, f, ensure_ascii=False)
+    f.close()
+
+
 if __name__ == '__main__':
+
     #nc = NetCDF('/home/ariel/Trabajo/django_venv3.6/files/wrfout_d03_2017-01-02_110000')
     #print(nc.__extra_vars__('SLP'))
 
@@ -202,8 +237,21 @@ if __name__ == '__main__':
 
     #provincias_municipios()
 
-    r = requests.get('http://127.0.0.1:8000/sispi_api/v1.0/init/provinces/')
-    print(r.status_code, r.elapsed, r.content)
+    #r = requests.get('http://127.0.0.1:8000/sispi_api/v1.0/init/provinces/')
+    #print(r.status_code, r.elapsed, r.content)
+
+    import numpy as np
+
+    file = 'sispi/fixtures/provinces.json'
+
+    with open(file, 'r') as f:
+        data = json.load(f)
+    f.close()
+
+    points = np.array(data["provincias"]['1']['geom']["coordinates"])
+    a = points[0]
+    print(a[0][0])
+
 
 
 

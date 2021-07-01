@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import JSONField
 from .meta import Domain, MetVariable, PointLocation, Province, Municipality
 import django
 
-"""
+
 class ProvinceForecast(models.Model):
  
     date_time = models.DateTimeField(default=django.utils.timezone.now())
@@ -22,4 +22,4 @@ class MunicipalityForecast(models.Model):
 
     def __str__(self):
         return '{}, {}'.format(self.municipality, self.date_time)
-"""
+

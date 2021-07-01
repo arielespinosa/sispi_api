@@ -31,21 +31,26 @@ def init_provinces(request, *args, **kwargs):
 
 def init_provinces_2(request, *args, **kwargs):
     # Seek how update geom too
+    file = os.path.join(BASE_DIR, 'sispi/fixtures/provinces.json')
 
-    file = os.path.join(BASE_DIR, 'sispi/fixtures/provincias_y_municipios_3.json')
-    data = json.load(open(file))
+    with open(file, 'r') as f:
+        data = json.load(f)
+    f.close()
 
     for key in data.keys():
         if key == 'provincias':
             for key2 in data[key].keys():
                 province = Province.objects.get(short_name=data[key][key2]['code'])
 
+                poligons = data[key][key2]['geom']["coordinates"][0] = [x[:-1] for x in data[key][key2]['geom']["coordinates"][0]]
+                geometry = {"type": "MultiPolygon", "coordinates": poligons}
+                province.geom = GEOSGeometry(str(geometry))
+                province.save()
+
                 if key2 != '16':
                     for pk in data[key][key2]['municipalities'].keys():
                         nombre = data[key][key2]['municipalities'][pk]['name']
                         municipality = Municipality.objects.get(name=nombre, province=province)
-                        print(municipality.name)
-
                         n_poligons = len(data[key][key2]['municipalities'][pk]['geometry']['coordinates'])
                         poligons = []
 

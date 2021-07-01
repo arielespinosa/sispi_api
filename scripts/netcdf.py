@@ -4,6 +4,7 @@ from pickle import dump, load
 from scipy.io import netcdf as nc
 from wrf import getvar
 
+
 class NetCDF:
     filename, data, dataset = None, dict(), None
 

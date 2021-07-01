@@ -11,9 +11,11 @@ import Levenshtein
 
 def init_provinces(request, *args, **kwargs):
     # Seek how update geom too
-
     file = os.path.join(BASE_DIR, 'sispi/fixtures/provincias_y_municipios.json')
-    data = json.load(open(file))
+
+    with open(file, 'r') as f:
+        data = json.load(f)
+    f.close()
 
     for key in data.keys():
         if key == 'provincias':
